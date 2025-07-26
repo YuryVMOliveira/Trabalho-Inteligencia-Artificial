@@ -39,11 +39,11 @@ void mostrarRegras() {
 
 int pedirNumFichas() {
     int n;
-    cout << "\nDigite o numero de fichas de cada cor (minimo 2, maximo 9): ";
+    cout << "\nDigite o numero de fichas de cada cor (minimo 2): ";
     while (true) {
         cin >> n;
-        if (cin.fail() || n < 2 || n > 9) {
-            cout << "Valor invalido. Digite um numero entre 2 e 9: ";
+        if (cin.fail() || n < 2) {
+            cout << "Valor invalido. Digite um numero maior ou igual a 2: ";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         } else {
