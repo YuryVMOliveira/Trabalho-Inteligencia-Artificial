@@ -141,7 +141,6 @@ int main() {
                 cout << "\n=== SOLUCIONADOR AUTOMATICO ===\n";
                 num_fichas = pedirNumFichas();
                 ReguaPuzzle jogo(num_fichas);
-                // Gera tabuleiro aleatório usando a lógica do jogo
                 vector<char> tabuleiro = jogo.getTabuleiro();
                 cout << "Tabuleiro inicial:\n";
                 cout << "+";
