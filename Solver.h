@@ -53,9 +53,9 @@ private:
     static SolverStats resolverBacktracking(const std::vector<char>& tabuleiroInicial, double timeout = 10.0);
     static SolverStats resolverDFS(const std::vector<char>& tabuleiroInicial, double timeout = 10.0);
     static SolverStats resolverUCS(const std::vector<char>& tabuleiroInicial);
-    static SolverStats resolverGulosa(const std::vector<char>& tabuleiroInicial);
-    static SolverStats resolverAStar(const std::vector<char>& tabuleiroInicial);
-    static SolverStats resolverIDAStar(const std::vector<char>& tabuleiroInicial);
+    static SolverStats resolverGulosa(const std::vector<char>& tabuleiroInicial, int heuristica);
+    static SolverStats resolverAStar(const std::vector<char>& tabuleiroInicial, int heuristica); // alterado
+    static SolverStats resolverIDAStar(const std::vector<char>& tabuleiroInicial, int heuristica); // alterado
     
     // Funcoes auxiliares
     static bool dfsLimitadoRecursivo(const std::vector<char>& tabuleiro, std::vector<int>& caminho, 
@@ -66,8 +66,8 @@ private:
                                int& nos_expandidos, int& nos_visitados, int custo_g);
 
 public:
-    static SolverStats resolver(const std::vector<char>& tabuleiroInicial, int algoritmo = 1);
+    static SolverStats resolver(const std::vector<char>& tabuleiroInicial, int algoritmo = 1, int heuristica = 1);
     static void mostrarSolucao(const std::vector<char>& tabuleiroInicial, const SolverStats& stats);
 };
 
-#endif 
+#endif

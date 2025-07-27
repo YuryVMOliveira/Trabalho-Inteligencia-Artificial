@@ -118,6 +118,22 @@ bool desejaTabuleiroAleatorio() {
     return (resp == 's' || resp == 'S');
 }
 
+int pedirHeuristica() {
+    int h;
+    mostrarMenuHeuristicas();
+    while (true) {
+        cin >> h;
+        if (cin.fail() || h < 1 || h > 2) {
+            cout << "Opcao invalida. Digite 1 ou 2: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        } else {
+            break;
+        }
+    }
+    return h;
+}
+
 int main() {
     srand(time(0));
     int num_fichas = 3;
@@ -141,6 +157,7 @@ int main() {
                 cout << "\n=== SOLUCIONADOR AUTOMATICO ===\n";
                 num_fichas = pedirNumFichas();
                 ReguaPuzzle jogo(num_fichas);
+                // Gera tabuleiro aleatório usando a lógica do jogo
                 vector<char> tabuleiro = jogo.getTabuleiro();
                 cout << "Tabuleiro inicial:\n";
                 cout << "+";
@@ -156,11 +173,16 @@ int main() {
                 mostrarMenuAlgoritmos();
                 int alg;
                 cin >> alg;
+
+                int heuristica = 1;
+                if (alg == 5 || alg == 6 || alg == 7) {
+                    heuristica = pedirHeuristica();
+                }
                 
                 if (alg >= 1 && alg <= 7) {
                     string nomeAlg = obterNomeAlgoritmo(alg);
                     cout << "\nProcurando solucao (" << nomeAlg << ")...\n";
-                    SolverStats stats = Solver::resolver(tabuleiro, alg);
+                    SolverStats stats = Solver::resolver(tabuleiro, alg, heuristica);
                     Solver::mostrarSolucao(tabuleiro, stats);
                 } else {
                     cout << "Opcao invalida!\n";
@@ -173,18 +195,21 @@ int main() {
             case 4:
                 cout << "Obrigado por jogar!\n";
                 break;
-            case 5: { // Nova opção de comparação
+            case 5: {
                 cout << "\n=== COMPARAR ALGORITMOS ===\n";
                 num_fichas = pedirNumFichas();
                 vector<char> tabuleiro;
                 for (int i = 0; i < num_fichas; ++i) tabuleiro.push_back('A');
                 tabuleiro.push_back('_');
                 for (int i = 0; i < num_fichas; ++i) tabuleiro.push_back('B');
+                int heuristica = 1;
+                cout << "\nPara algoritmos heurísticos (Gulosa, A*, IDA*):";
+                heuristica = pedirHeuristica();
                 vector<SolverStats> statsList;
                 vector<string> nomes;
                 for (int alg = 1; alg <= 7; ++alg) {
                     nomes.push_back(obterNomeAlgoritmo(alg));
-                    statsList.push_back(Solver::resolver(tabuleiro, alg));
+                    statsList.push_back(Solver::resolver(tabuleiro, alg, heuristica));
                 }
                 mostrarTabelaComparacao(statsList, nomes);
                 cout << "\nPressione Enter para continuar...\n";
