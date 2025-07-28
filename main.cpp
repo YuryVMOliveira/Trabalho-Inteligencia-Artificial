@@ -325,7 +325,7 @@ int main()
                 tabuleiro = gerarTabuleiroPadrao(num_fichas);
             }
             int heuristica = 1;
-            cout << "\nPara algoritmos heurísticos (Gulosa, A*, IDA*):";
+            cout << "\nPara algoritmos heuristicos (Gulosa, A*, IDA*):";
             heuristica = pedirHeuristica();
             vector<SolverStats> statsList;
             vector<string> nomes;
