@@ -9,13 +9,7 @@ make
 
 ### 2. Executar o jogo principal
 ```bash
-./regua_puzzle
-```
-
-### 3. Testar o solucionador
-```bash
-g++ -std=c++11 teste.cpp Solver.cpp -o teste
-./teste
+make run
 ```
 
 ## Como Jogar

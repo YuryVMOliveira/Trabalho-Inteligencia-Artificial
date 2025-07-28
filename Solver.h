@@ -47,6 +47,8 @@ private:
     // Heuristicas
     static int heuristicaManhattan(const std::vector<char>& tabuleiro);
     static int heuristicaFichasForaDoLugar(const std::vector<char>& tabuleiro);
+    static int heuristicaCombinada(const std::vector<char>& tabuleiro);
+    static int heuristicaInversoes(const std::vector<char>& tabuleiro);
     
     // Algoritmos de busca
     static SolverStats resolverBFS(const std::vector<char>& tabuleiroInicial);

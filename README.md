@@ -1,56 +1,57 @@
 # Jogo das Fichas (Régua Puzzle)
 
-Este é um projeto em C++ que implementa o clássico jogo das fichas, também conhecido como "Régua Puzzle" ou "Puzzle das Fichas".
+Este é um projeto em C++ que implementa o clássico jogo das fichas, também conhecido como "Régua Puzzle".
 
 ## Descrição do Jogo
 
-O jogo consiste em uma régua com 7 posições, onde há:
-- 2 fichas vermelhas (R)
-- 2 fichas azuis (A) 
-- 2 fichas verdes (V)
+O jogo consiste em uma régua com posições, onde há:
+- N fichas vermelhas (B)
+- N fichas azuis (A)
 - 1 espaço vazio (_)
 
 ### Objetivo
-Organizar as fichas para que fiquem agrupadas por cor, com o espaço vazio no meio:
+Organizar as fichas para que fiquem separadas por cor, por exemplo:
 ```
-V V _ R R A A
+B B B ... _ A A A ...
 ```
 
 ### Regras
-- Você pode mover uma ficha para um espaço vazio adjacente
-- Você pode pular sobre uma ficha para chegar a um espaço vazio
-- O objetivo é organizar todas as fichas da mesma cor juntas
+- Você pode mover uma ficha para um espaço vazio adjacente.
+- Você pode pular sobre uma ficha para chegar a um espaço vazio.
+- O objetivo é organizar todas as fichas da mesma cor juntas, conforme o objetivo acima.
 
 ## Como Compilar
 
 ### Usando Makefile (Recomendado)
 ```bash
-# Compilar o programa
-make
-
-# Compilar e executar
-make run
-
-# Limpar arquivos gerados
-make clean
+make           # Compilar o programa
+make run       # Compilar e executar
+make clean     # Limpar arquivos gerados
 ```
 
 ### Compilação Manual
 ```bash
-g++ -std=c++11 -Wall -Wextra -O2 main.cpp ReguaPuzzle.cpp -o regua_puzzle
+g++ -std=c++11 -Wall -Wextra -O2 main.cpp ReguaPuzzle.cpp Solver.cpp -o regua_puzzle
 ```
 
 ## Como Jogar
 
-1. Execute o programa: `./regua_puzzle`
-2. Escolha a opção "1. Jogar" no menu principal
-3. O tabuleiro será exibido com as posições numeradas de 0 a 6
-4. Digite o número da posição da ficha que deseja mover
-5. Use 'R' para reiniciar o jogo
-6. Use 'Q' para sair
+1. Execute o programa: `./regua_puzzle` (Linux/Mac) ou `regua_puzzle.exe` (Windows)
+2. Escolha a opção desejada no menu principal:
+    - **1. Jogar**: Inicia uma nova partida interativa
+    - **2. Ver regras**: Mostra as regras do jogo
+    - **3. Solucionador automático**: O computador resolve o puzzle usando algoritmos de busca
+    - **4. Sair**: Encerra o programa
+    - **5. Comparar algoritmos**: Compara o desempenho dos algoritmos de busca
+
+### Durante o Jogo
+
+- Digite o número da posição da ficha que deseja mover.
+- Use 'R' para reiniciar o jogo.
+- Use 'Q' para sair do jogo atual.
 
 ### Controles
-- **0-6**: Selecionar posição da ficha para mover
+- **0-N**: Selecionar posição da ficha para mover
 - **R**: Reiniciar o jogo
 - **Q**: Sair do jogo
 
@@ -62,22 +63,22 @@ g++ -std=c++11 -Wall -Wextra -O2 main.cpp ReguaPuzzle.cpp -o regua_puzzle
 ├── ReguaPuzzle.cpp    # Implementação da classe do jogo
 ├── Solver.h           # Cabeçalho do solucionador automático
 ├── Solver.cpp         # Implementação do solucionador
-├── teste.cpp          # Programa de teste do solucionador
 ├── Makefile           # Script de compilação
 └── README.md          # Este arquivo
 ```
 
 ## Funcionalidades
 
-- ✅ Interface de menu interativa
-- ✅ Tabuleiro visual com bordas
-- ✅ Validação de movimentos
-- ✅ Contador de movimentos
-- ✅ Verificação de vitória
-- ✅ Embaralhamento automático
-- ✅ Reinicialização do jogo
-- ✅ Solucionador automático (algoritmo de busca em largura)
-- ✅ Compatibilidade Windows/Linux
+- Interface de menu interativa
+- Tabuleiro visual com bordas
+- Validação de movimentos
+- Contador de movimentos
+- Verificação de vitória
+- Embaralhamento automático
+- Reinicialização do jogo
+- Solucionador automático (vários algoritmos de busca)
+- Comparação de desempenho entre algoritmos
+- Compatibilidade Windows/Linux
 
 ## Requisitos
 
@@ -87,13 +88,29 @@ g++ -std=c++11 -Wall -Wextra -O2 main.cpp ReguaPuzzle.cpp -o regua_puzzle
 ## Exemplo de Jogo
 
 ```
-┌─┬─┬─┬─┬─┬─┬─┐
-│R│A│_│V│R│A│V│
-└─┴─┴─┴─┴─┴─┴─┘
- 0 1 2 3 4 5 6
-
-Movimentos: 0
++---+---+---+---+---+---+---+
+|B  |B  |_  |A  |A  |   |   |
++---+---+---+---+---+---+---+
+ 0   1   2   3   4   5   6
 ```
+Movimentos: 0
+
+## Solucionador Automático
+
+O solucionador pode usar diferentes algoritmos de busca:
+- Busca em Largura (BFS)
+- Backtracking
+- Busca em Profundidade (DFS)
+- Busca Ordenada (UCS)
+- Busca Gulosa
+- Busca A*
+- Busca IDA*
+
+Para algoritmos heurísticos, é possível escolher entre:
+- Heurística de Manhattan
+- Heurística de Fichas Fora do Lugar
+
+O programa mostra estatísticas como número de movimentos, profundidade, custo, nós expandidos, visitados, fator de ramificação e tempo de execução.
 
 ## Desenvolvimento
 
@@ -104,9 +121,9 @@ Este projeto foi desenvolvido como trabalho prático de programação em C++, de
 - Lógica de jogos
 - Validação de entrada
 - Estruturas de controle
-- Algoritmos de busca (BFS)
+- Algoritmos de busca (BFS, DFS, A*, etc.)
 - Resolução automática de problemas
 
 ## Autor
 
-Desenvolvido como trabalho prático de programação. 
+Desenvolvido como trabalho prático de programação.

@@ -4,7 +4,10 @@
 #include <chrono>
 #include <stack>
 #include <set>
+#include <unordered_set>
+#include <unordered_map>
 #include <thread>
+#include <climits> // Para INT_MAX
 
 // --- Timeout padrão para todos algoritmos (em segundos) ---
 const double TIMEOUT_PADRAO = 10.0;
@@ -33,7 +36,7 @@ std::vector<char> Solver::stringParaTabuleiro(const std::string& str) {
 }
 
 int Solver::encontrarEspacoVazio(const std::vector<char>& tabuleiro) {
-    for (int i = 0; i < tabuleiro.size(); i++) {
+    for (size_t i = 0; i < tabuleiro.size(); i++) {
         if (tabuleiro[i] == '_') {
             return i;
         }
@@ -56,56 +59,129 @@ std::vector<char> Solver::aplicarMovimento(const std::vector<char>& tabuleiro, i
     std::vector<char> novoTabuleiro = tabuleiro;
     int espacoVazio = encontrarEspacoVazio(tabuleiro);
     if (espacoVazio == -1) return novoTabuleiro;
-    std::swap(novoTabuleiro[posicao], novoTabuleiro[espacoVazio]);
+    
+    // Verificar se o movimento é válido
+    if (posicao < 0 || posicao >= (int)tabuleiro.size() || tabuleiro[posicao] == '_') {
+        return novoTabuleiro;
+    }
+    
+    // Verificar se pode mover para o espaço vazio
+    if (posicao == espacoVazio - 1 || posicao == espacoVazio + 1) {
+        // Movimento direto
+        std::swap(novoTabuleiro[posicao], novoTabuleiro[espacoVazio]);
+    } else if (posicao == espacoVazio - 2 && tabuleiro[espacoVazio - 1] != '_') {
+        // Pulo para esquerda
+        std::swap(novoTabuleiro[posicao], novoTabuleiro[espacoVazio]);
+    } else if (posicao == espacoVazio + 2 && tabuleiro[espacoVazio + 1] != '_') {
+        // Pulo para direita
+        std::swap(novoTabuleiro[posicao], novoTabuleiro[espacoVazio]);
+    }
+    
     return novoTabuleiro;
 }
 
 bool Solver::verificarVitoria(const std::vector<char>& tabuleiro) {
-    int n = (tabuleiro.size() - 1) / 2;
-    for (int i = 0; i < n; ++i) {
-        if (tabuleiro[i] != 'B') return false;
+    bool encontrouVermelha = false;
+    for (char c : tabuleiro) {
+        if (c == 'B') {
+            encontrouVermelha = true;
+        }
+        if (c == 'A' && encontrouVermelha) {
+            // Encontrou uma azul depois de uma vermelha → não venceu
+            return false;
+        }
     }
-    if (tabuleiro[n] != '_') return false;
-    for (int i = n + 1; i < (int)tabuleiro.size(); ++i) {
-        if (tabuleiro[i] != 'A') return false;
-    }
-    return true;
+    return true; // Nenhuma azul depois de vermelha → vitória!
 }
 
 // Heuristicas
 int Solver::heuristicaManhattan(const std::vector<char>& tabuleiro) {
-    int n = (tabuleiro.size() - 1) / 2;
     int custo = 0;
+    int n = tabuleiro.size();
     
-    for (int i = 0; i < tabuleiro.size(); ++i) {
+    // Contar quantas fichas B e A existem
+    int numB = 0, numA = 0;
+    for (char c : tabuleiro) {
+        if (c == 'B') numB++;
+        else if (c == 'A') numA++;
+    }
+    
+    // Para cada ficha B, calcular distância até sua posição ideal
+    // As fichas B devem ocupar as primeiras posições (0, 1, 2, ...)
+    int posicaoIdealB = 0;
+    for (int i = 0; i < n; ++i) {
         if (tabuleiro[i] == 'B') {
-            // Ficha B deve estar na primeira metade
-            if (i >= n) {
-                custo += i - (n - 1); // distancia ate a posicao correta
-            }
-        } else if (tabuleiro[i] == 'A') {
-            // Ficha A deve estar na segunda metade
-            if (i < n + 1) {
-                custo += (n + 1) - i; // distancia ate a posicao correta
-            }
+            custo += abs(i - posicaoIdealB);
+            posicaoIdealB++;
         }
     }
+    
+    // Para cada ficha A, calcular distância até sua posição ideal
+    // As fichas A devem ocupar as últimas posições (n-1, n-2, ...)
+    int posicaoIdealA = n - 1;
+    for (int i = n - 1; i >= 0; --i) {
+        if (tabuleiro[i] == 'A') {
+            custo += abs(i - posicaoIdealA);
+            posicaoIdealA--;
+        }
+    }
+    
     return custo;
 }
 
-int Solver::heuristicaFichasForaDoLugar(const std::vector<char>& tabuleiro) {
-    int n = (tabuleiro.size() - 1) / 2;
-    int fichasForaDoLugar = 0;
+// Nova heurística mais eficiente para IDA*
+int Solver::heuristicaInversoes(const std::vector<char>& tabuleiro) {
+    int inversoes = 0;
+    int n = tabuleiro.size();
     
+    // Contar inversões: quantas vezes uma ficha A aparece antes de uma ficha B
     for (int i = 0; i < n; ++i) {
+        if (tabuleiro[i] == 'A') {
+            for (int j = i + 1; j < n; ++j) {
+                if (tabuleiro[j] == 'B') {
+                    inversoes++;
+                }
+            }
+        }
+    }
+    
+    // Cada inversão requer pelo menos um movimento para ser corrigida
+    return inversoes;
+}
+
+int Solver::heuristicaFichasForaDoLugar(const std::vector<char>& tabuleiro) {
+    int fichasForaDoLugar = 0;
+    int n = tabuleiro.size();
+    
+    // Contar quantas fichas B e A existem
+    int numB = 0, numA = 0;
+    for (char c : tabuleiro) {
+        if (c == 'B') numB++;
+        else if (c == 'A') numA++;
+    }
+    
+    // Verificar se as fichas estão na ordem correta: BBB..._...AAA
+    // As primeiras numB posições devem ter fichas B
+    for (int i = 0; i < numB; ++i) {
         if (tabuleiro[i] != 'B') fichasForaDoLugar++;
     }
-    if (tabuleiro[n] != '_') fichasForaDoLugar++;
-    for (int i = n + 1; i < (int)tabuleiro.size(); ++i) {
+    
+    // A posição numB deve estar vazia (espaço entre B e A)
+    if (tabuleiro[numB] != '_') fichasForaDoLugar++;
+    
+    // As últimas numA posições devem ter fichas A
+    for (int i = numB + 1; i < n; ++i) {
         if (tabuleiro[i] != 'A') fichasForaDoLugar++;
     }
     
+    // Manter o valor original para garantir admissibilidade
     return fichasForaDoLugar;
+}
+// Nova heurística mais eficiente: combinação de Manhattan e Fichas Fora do Lugar
+int Solver::heuristicaCombinada(const std::vector<char>& tabuleiro) {
+    int manhattan = heuristicaManhattan(tabuleiro);
+    int fichasFora = heuristicaFichasForaDoLugar(tabuleiro);
+    return (manhattan + fichasFora) / 2; // Média das duas heurísticas
 }
 
 // BFS (Busca em Largura)
@@ -402,7 +478,6 @@ SolverStats Solver::resolverAStar(const std::vector<char>& tabuleiroInicial, int
     return stats;
 }
 
-// IDA* (Iterative Deepening A*)
 SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, int heuristica) {
     SolverStats stats;
     auto start = std::chrono::high_resolution_clock::now();
@@ -412,12 +487,27 @@ SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, i
     int soma_ramificacao = 0;
     int total_nos = 0;
     bool encontrou = false;
-    int h_inicial = (heuristica == 2) ? heuristicaFichasForaDoLugar(tabuleiroInicial) : heuristicaManhattan(tabuleiroInicial);
+    
+    // Escolher heurística baseada no parâmetro
+    int h_inicial;
+    if (heuristica == 2) {
+        h_inicial = heuristicaInversoes(tabuleiroInicial); // Usar heurística de inversões
+    } else {
+        h_inicial = heuristicaManhattan(tabuleiroInicial);
+    }
+    
+    // Usar limite inicial mais conservador
     int limite = h_inicial;
-    std::function<bool(const std::vector<char>&, int, int, std::set<std::string>&)> idaStar = 
-        [&](const std::vector<char>& tabuleiro, int profundidade, int custo_g, std::set<std::string>& visitados) -> bool {
+    const int LIMITE_MAXIMO = 100; // Aumentar limite para garantir otimalidade
+    const double TIMEOUT = 15.0; // Aumentar timeout
+    
+    std::function<bool(const std::vector<char>&, int, int, std::unordered_set<std::string>&)> idaStar = 
+        [&](const std::vector<char>& tabuleiro, int profundidade, int custo_g, std::unordered_set<std::string>& visitados) -> bool {
+            // Verificar timeout
+            if (estourouTimeout(start, TIMEOUT)) return false;
+            
             nos_expandidos++;
-
+            
             if (verificarVitoria(tabuleiro)) {
                 stats.caminho = caminho;
                 stats.profundidade = profundidade;
@@ -425,45 +515,60 @@ SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, i
                 encontrou = true;
                 return true;
             }
-
-            int h = (heuristica == 2) ? heuristicaFichasForaDoLugar(tabuleiro) : heuristicaManhattan(tabuleiro);
+            
+            // Calcular heurística baseada no parâmetro
+            int h;
+            if (heuristica == 2) {
+                h = heuristicaInversoes(tabuleiro); // Usar heurística de inversões
+            } else {
+                h = heuristicaManhattan(tabuleiro);
+            }
+            
             int f = custo_g + h;
             if (f > limite) return false;
-
+            
             std::string tabStr = tabuleiroParaString(tabuleiro);
             visitados.insert(tabStr);
             std::vector<int> movimentosPossiveis = encontrarMovimentosPossiveis(tabuleiro);
             soma_ramificacao += movimentosPossiveis.size();
             total_nos++;
-
+            
             for (int movimento : movimentosPossiveis) {
                 std::vector<char> novoTabuleiro = aplicarMovimento(tabuleiro, movimento);
                 std::string novoTabuleiroStr = tabuleiroParaString(novoTabuleiro);
-
+                
                 if (visitados.find(novoTabuleiroStr) == visitados.end()) {
                     nos_visitados++;
                     caminho.push_back(movimento);
-
+                    
                     if (idaStar(novoTabuleiro, profundidade + 1, custo_g + 1, visitados)) {
                         return true;
                     }
-
+                    
                     caminho.pop_back();
                 }
             }
-            visitados.erase(tabStr); // Remove ao voltar
+            
             return false;
         };
-
-    while (true) {
-        std::set<std::string> visitados;
+    
+    // Loop principal do IDA*
+    while (limite <= LIMITE_MAXIMO) {
+        std::unordered_set<std::string> visitados;
         caminho.clear();
+        
         if (idaStar(tabuleiroInicial, 0, 0, visitados)) {
+            break; // Solução encontrada
+        }
+        
+        // Verificar timeout antes de incrementar o limite
+        if (estourouTimeout(start, TIMEOUT)) {
             break;
         }
+        
         limite++;
     }
-
+    
     auto end = std::chrono::high_resolution_clock::now();
     if (!encontrou) {
         stats.caminho.clear();
@@ -589,3 +694,5 @@ void Solver::mostrarSolucao(const std::vector<char>& tabuleiroInicial, const Sol
     std::cout << "Fator medio de ramificacao: " << stats.fator_ramificacao << "\n";
     std::cout << "Tempo de execucao: " << stats.tempo_execucao << " segundos\n\n";
 }
+
+

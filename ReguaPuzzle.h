@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-
+    
 class ReguaPuzzle {
 private:
     std::vector<char> tabuleiro;
@@ -12,6 +12,7 @@ private:
     int posicaoVazia;
     int movimentos;
     bool jogoTerminado;
+    bool tabuleiroDefinidoManualmente;
     
     // Constantes para cores das fichas
     static const char FICHA_AZUL = 'A';
@@ -41,6 +42,7 @@ public:
     void setNumFichas(int n);
     int getNumFichas() const;
     std::vector<char> getTabuleiro() const;
+    void setTabuleiro(const std::vector<char>& novoTabuleiro);
 };
 
-#endif 
+#endif
