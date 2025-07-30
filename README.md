@@ -78,22 +78,10 @@ g++ -std=c++11 -Wall -Wextra -O2 main.cpp ReguaPuzzle.cpp Solver.cpp -o regua_pu
 - Reinicialização do jogo
 - Solucionador automático (vários algoritmos de busca)
 - Comparação de desempenho entre algoritmos
-- Compatibilidade Windows/Linux
 
 ## Requisitos
 
 - Compilador C++ com suporte a C++11 (g++, clang++, etc.)
-- Sistema operacional: Windows, Linux ou macOS
-
-## Exemplo de Jogo
-
-```
-+---+---+---+---+---+---+---+
-|B  |B  |_  |A  |A  |   |   |
-+---+---+---+---+---+---+---+
- 0   1   2   3   4   5   6
-```
-Movimentos: 0
 
 ## Solucionador Automático
 
@@ -101,14 +89,14 @@ O solucionador pode usar diferentes algoritmos de busca:
 - Busca em Largura (BFS)
 - Backtracking
 - Busca em Profundidade (DFS)
-- Busca Ordenada (UCS)
+- Busca Ordenada
 - Busca Gulosa
 - Busca A*
 - Busca IDA*
 
 Para algoritmos heurísticos, é possível escolher entre:
 - Heurística de Manhattan
-- Heurística de Fichas Fora do Lugar
+- Heurística de inversão
 
 O programa mostra estatísticas como número de movimentos, profundidade, custo, nós expandidos, visitados, fator de ramificação e tempo de execução.
 

@@ -81,26 +81,41 @@ std::vector<char> Solver::aplicarMovimento(const std::vector<char>& tabuleiro, i
     return novoTabuleiro;
 }
 
+// bool Solver::verificarVitoria(const std::vector<char>& tabuleiro) {
+//     std::vector<char> v = tabuleiro;
+//     v.erase(std::remove(v.begin(), v.end(), '_'), v.end());
+//     int numFichas = v.size()/2;
+//     if(v[0] == 'A'){
+//         for(int i = 0; i < numFichas; i++){
+//             if(v[i] != 'A'){
+//                 return false;
+//             }
+//         }
+//     }
+//     else if(v[0] == 'B'){
+//         for(int i = 0; i < numFichas; i++){
+//             if(v[i] != 'B'){
+//                 return false;
+//             }
+//         }
+//     }
+//     return true; // Nenhuma azul depois de vermelha → vitória!
+// }
+
 bool Solver::verificarVitoria(const std::vector<char>& tabuleiro) {
-    std::vector<char> v = tabuleiro;
-    v.erase(std::remove(v.begin(), v.end(), '_'), v.end());
-    int numFichas = v.size()/2;
-    if(v[0] == 'A'){
-        for(int i = 0; i < numFichas; i++){
-            if(v[i] != 'A'){
-                return false;
-            }
-        }
-    }
-    else if(v[0] == 'B'){
-        for(int i = 0; i < numFichas; i++){
-            if(v[i] != 'B'){
-                return false;
-            }
-        }
-    }
-    return true; // Nenhuma azul depois de vermelha → vitória!
+   std::vector<char> v = tabuleiro;
+   v.erase(std::remove(v.begin(), v.end(), '_'), v.end());
+   int numFichas = v.size() / 2;
+   // Verifica se a primeira metade é toda 'B' e a segunda metade é toda 'A'
+   for (int i = 0; i < numFichas; ++i) {
+       if (v[i] != 'B') return false;
+   }
+   for (int i = numFichas; i < v.size(); ++i) {
+       if (v[i] != 'A') return false;
+   }
+    return true;
 }
+
 
 // Heuristicas
 int Solver::heuristicaManhattan(const std::vector<char>& tabuleiro) {
