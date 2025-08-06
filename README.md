@@ -1,5 +1,5 @@
 # Link para apresentação:
-[Apresentação no canva](https://www.canva.com/design/DAGvO-rXBN0/NFuBJT7J03K2p3VHHZ2L_w/view?utm_content=DAGvO-rXBN0&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hba2b6ea953)
+[Apresentação no canva](https://www.canva.com/design/DAGvO-rXBN0/GKTnZDvbt7RTkq8Syz443A/edit?utm_content=DAGvO-rXBN0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 # Jogo das Fichas (Régua Puzzle)
 

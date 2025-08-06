@@ -105,35 +105,34 @@ string obterNomeAlgoritmo(int algoritmo)
 }
 
 void mostrarTabelaComparacao(const vector<SolverStats>& statsList, const vector<string>& nomes) {
-    cout << "\n+-------------------------------+---------------------+------------------------+-------------------+----------------+--------------+---------------------+----------------------+" << endl;
-    cout << "| Algoritmo                    | Tamanho do Caminho  | Profundidade da Solucao| Custo da Solucao  | Nos Expandidos | Nos Visitados| Tempo de Execucao (s)| Fator de Ramificacao |" << endl;
-    cout << "+-------------------------------+---------------------+------------------------+-------------------+----------------+--------------+---------------------+----------------------+" << endl;
+    cout << "\n+-----------------------------------+------------------------+---------------------------+--------------------+------------------+---------------------------+----------------------------+" << endl;
+    cout << "| Algoritmo                         | Tamanho do Caminho     | Profundidade da Solucao  | Nos Expandidos     | Nos Visitados    | Tempo de Execucao (s)     | Fator de Ramificacao       |" << endl;
+    cout << "+-----------------------------------+------------------------+---------------------------+--------------------+------------------+---------------------------+----------------------------+" << endl;
 
     for (size_t i = 0; i < statsList.size(); ++i) {
         const SolverStats& s = statsList[i];
-        cout << "| " << left << setw(30) << nomes[i].substr(0, 30);
+        cout << "| " << left << setw(34) << nomes[i].substr(0, 34) << " ";
 
-        if (s.profundidade == -1 || s.custo == -1) {
-            cout << "| " << right << setw(19) << "N/A"
-                 << " | " << setw(22) << "N/A"
-                 << " | " << setw(17) << "N/A"
-                 << " | " << setw(14) << s.nos_expandidos
-                 << " | " << setw(12) << s.nos_visitados
-                 << " | " << setw(19) << fixed << setprecision(4) << s.tempo_execucao
-                 << " | " << setw(22) << "N/A" << " |" << endl;
+        if (s.profundidade == -1) {
+            cout << "| " << left << setw(23) << "N/A"
+                 << "| " << setw(27) << "N/A"
+                 << "| " << setw(20) << s.nos_expandidos
+                 << "| " << setw(18) << s.nos_visitados
+                 << "| " << setw(27) << fixed << setprecision(4) << s.tempo_execucao
+                 << "| " << setw(28) << "N/A" << "|" << endl;
         } else {
-            cout << "| " << right << setw(19) << s.caminho.size()
-                 << " | " << setw(22) << s.profundidade
-                 << " | " << setw(17) << s.custo
-                 << " | " << setw(14) << s.nos_expandidos
-                 << " | " << setw(12) << s.nos_visitados
-                 << " | " << setw(19) << fixed << setprecision(4) << s.tempo_execucao
-                 << " | " << setw(22) << fixed << setprecision(2) << s.fator_ramificacao << " |" << endl;
+            cout << "| " << left << setw(23) << s.caminho.size()
+                 << "| " << setw(27) << s.profundidade
+                 << "| " << setw(20) << s.nos_expandidos
+                 << "| " << setw(18) << s.nos_visitados
+                 << "| " << setw(27) << fixed << setprecision(4) << s.tempo_execucao
+                 << "| " << setw(28) << fixed << setprecision(2) << s.fator_ramificacao << "|" << endl;
         }
     }
 
-    cout << "+-------------------------------+---------------------+------------------------+-------------------+----------------+--------------+---------------------+----------------------+\n";
+    cout << "+-----------------------------------+------------------------+---------------------------+--------------------+------------------+---------------------------+----------------------------+\n";
 }
+
 
 
 bool desejaTabuleiroAleatorio() {
