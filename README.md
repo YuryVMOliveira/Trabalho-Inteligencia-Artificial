@@ -1,3 +1,6 @@
+# Link para apresentação:
+[Apresentação no canva](https://www.canva.com/design/DAGvO-rXBN0/NFuBJT7J03K2p3VHHZ2L_w/view?utm_content=DAGvO-rXBN0&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hba2b6ea953)
+
 # Jogo das Fichas (Régua Puzzle)
 
 Este é um projeto em C++ que implementa o clássico jogo das fichas, também conhecido como "Régua Puzzle" ou "Puzzle das Fichas".

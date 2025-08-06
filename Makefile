@@ -28,7 +28,13 @@ $(TARGET): $(OBJECTS)
 
 # Limpar arquivos gerados
 clean:
+ifeq ($(OS),Windows_NT)
+	@echo Deletando arquivos...
+	-del /Q $(subst /,\,$(OBJECTS)) regua_puzzle.exe 2>nul
+else
 	rm -f $(OBJECTS) $(TARGET)
+endif
+
 
 # Executar o programa
 run: $(TARGET)

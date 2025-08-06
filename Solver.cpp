@@ -100,7 +100,6 @@ int Solver::heuristicaFichasForaDoLugar(const std::vector<char>& tabuleiro) {
     for (int i = 0; i < n; ++i) {
         if (tabuleiro[i] != 'B') fichasForaDoLugar++;
     }
-    if (tabuleiro[n] != '_') fichasForaDoLugar++;
     for (int i = n + 1; i < (int)tabuleiro.size(); ++i) {
         if (tabuleiro[i] != 'A') fichasForaDoLugar++;
     }
@@ -412,10 +411,21 @@ SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, i
     int soma_ramificacao = 0;
     int total_nos = 0;
     bool encontrou = false;
+    bool timeout_ocorreu = false;
+
     int h_inicial = (heuristica == 2) ? heuristicaFichasForaDoLugar(tabuleiroInicial) : heuristicaManhattan(tabuleiroInicial);
     int limite = h_inicial;
+
     std::function<bool(const std::vector<char>&, int, int, std::set<std::string>&)> idaStar = 
         [&](const std::vector<char>& tabuleiro, int profundidade, int custo_g, std::set<std::string>& visitados) -> bool {
+            // Verifica timeout
+            auto now = std::chrono::high_resolution_clock::now();
+            double tempo_decorrido = std::chrono::duration<double>(now - start).count();
+            if (tempo_decorrido > TIMEOUT_PADRAO) {
+                timeout_ocorreu = true;
+                return false;
+            }
+
             nos_expandidos++;
 
             if (verificarVitoria(tabuleiro)) {
@@ -449,18 +459,25 @@ SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, i
                     }
 
                     caminho.pop_back();
+
+                    if (timeout_ocorreu) return false; // Interrompe busca se timeout ocorrer em chamadas recursivas
                 }
             }
-            visitados.erase(tabStr); // Remove ao voltar
+
+            visitados.erase(tabStr);
             return false;
         };
 
     while (true) {
+        if (timeout_ocorreu) break;
+
         std::set<std::string> visitados;
         caminho.clear();
+
         if (idaStar(tabuleiroInicial, 0, 0, visitados)) {
             break;
         }
+
         limite++;
     }
 
@@ -470,13 +487,14 @@ SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, i
         stats.profundidade = -1;
         stats.custo = -1;
     }
+
     stats.nos_expandidos = nos_expandidos;
     stats.nos_visitados = nos_visitados;
     stats.fator_ramificacao = total_nos > 0 ? (double)soma_ramificacao / total_nos : 0.0;
     stats.tempo_execucao = std::chrono::duration<double>(end - start).count();
+
     return stats;
 }
-
 // --- Implementação da DFS ilimitada com timeout ---
 SolverStats Solver::resolverDFS(const std::vector<char>& tabuleiroInicial, double timeout) {
     SolverStats stats;

@@ -86,30 +86,36 @@ string obterNomeAlgoritmo(int algoritmo) {
 }
 
 void mostrarTabelaComparacao(const vector<SolverStats>& statsList, const vector<string>& nomes) {
-    cout << "\n+-------------------------------+---------------------+------------------------+-------------------+----------------+--------------+---------------------+" << endl;
-    cout << "| Algoritmo                    | Tamanho do Caminho  | Profundidade da Solucao| Custo da Solucao  | Nos Expandidos | Nos Visitados| Tempo de Execucao (s)|" << endl;
-    cout << "+-------------------------------+---------------------+------------------------+-------------------+----------------+--------------+---------------------+" << endl;
+    cout << "\n+-------------------------------+---------------------+------------------------+-------------------+----------------+--------------+---------------------+----------------------+" << endl;
+    cout << "| Algoritmo                    | Tamanho do Caminho  | Profundidade da Solucao| Custo da Solucao  | Nos Expandidos | Nos Visitados| Tempo de Execucao (s)| Fator de Ramificacao |" << endl;
+    cout << "+-------------------------------+---------------------+------------------------+-------------------+----------------+--------------+---------------------+----------------------+" << endl;
+
     for (size_t i = 0; i < statsList.size(); ++i) {
         const SolverStats& s = statsList[i];
         cout << "| " << left << setw(30) << nomes[i].substr(0, 30);
+
         if (s.profundidade == -1 || s.custo == -1) {
             cout << "| " << right << setw(19) << "N/A"
                  << " | " << setw(22) << "N/A"
                  << " | " << setw(17) << "N/A"
                  << " | " << setw(14) << s.nos_expandidos
                  << " | " << setw(12) << s.nos_visitados
-                 << " | " << setw(19) << fixed << setprecision(4) << s.tempo_execucao << " |" << endl;
+                 << " | " << setw(19) << fixed << setprecision(4) << s.tempo_execucao
+                 << " | " << setw(22) << "N/A" << " |" << endl;
         } else {
             cout << "| " << right << setw(19) << s.caminho.size()
                  << " | " << setw(22) << s.profundidade
                  << " | " << setw(17) << s.custo
                  << " | " << setw(14) << s.nos_expandidos
                  << " | " << setw(12) << s.nos_visitados
-                 << " | " << setw(19) << fixed << setprecision(4) << s.tempo_execucao << " |" << endl;
+                 << " | " << setw(19) << fixed << setprecision(4) << s.tempo_execucao
+                 << " | " << setw(22) << fixed << setprecision(2) << s.fator_ramificacao << " |" << endl;
         }
     }
-    cout << "+-------------------------------+---------------------+------------------------+-------------------+----------------+--------------+---------------------+\n";
+
+    cout << "+-------------------------------+---------------------+------------------------+-------------------+----------------+--------------+---------------------+----------------------+\n";
 }
+
 
 bool desejaTabuleiroAleatorio() {
     char resp;
@@ -203,7 +209,7 @@ int main() {
                 tabuleiro.push_back('_');
                 for (int i = 0; i < num_fichas; ++i) tabuleiro.push_back('B');
                 int heuristica = 1;
-                cout << "\nPara algoritmos heurísticos (Gulosa, A*, IDA*):";
+                cout << "\nPara algoritmos heuristicos (Gulosa, A*, IDA*):";
                 heuristica = pedirHeuristica();
                 vector<SolverStats> statsList;
                 vector<string> nomes;
