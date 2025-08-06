@@ -29,12 +29,13 @@ private:
         int profundidade;
         int custo_g; // custo acumulado (para UCS e A*)
         int custo_h; // heuristica (para A* e Gulosa)
+        Estado* pai; // para IDA*
         
         Estado(const std::vector<char>& tab, const std::vector<int>& movs, int prof)
-            : tabuleiro(tab), movimentos(movs), profundidade(prof), custo_g(0), custo_h(0) {}
+            : tabuleiro(tab), movimentos(movs), profundidade(prof), custo_g(0), custo_h(0), pai(nullptr) {}
         
         Estado(const std::vector<char>& tab, const std::vector<int>& movs, int prof, int g, int h)
-            : tabuleiro(tab), movimentos(movs), profundidade(prof), custo_g(g), custo_h(h) {}
+            : tabuleiro(tab), movimentos(movs), profundidade(prof), custo_g(g), custo_h(h), pai(nullptr) {}
     };
     
     static std::string tabuleiroParaString(const std::vector<char>& tabuleiro);
@@ -46,13 +47,15 @@ private:
     
     // Heuristicas
     static int heuristicaManhattan(const std::vector<char>& tabuleiro);
-    static int heuristicaFichasForaDoLugar(const std::vector<char>& tabuleiro);
+    static int heuristicaInversoes(const std::vector<char>& tabuleiro);
+
+
     
     // Algoritmos de busca
     static SolverStats resolverBFS(const std::vector<char>& tabuleiroInicial);
     static SolverStats resolverBacktracking(const std::vector<char>& tabuleiroInicial, double timeout = 10.0);
     static SolverStats resolverDFS(const std::vector<char>& tabuleiroInicial, double timeout = 10.0);
-    static SolverStats resolverUCS(const std::vector<char>& tabuleiroInicial);
+    static SolverStats resolverOrdenada(const std::vector<char>& tabuleiroInicial);
     static SolverStats resolverGulosa(const std::vector<char>& tabuleiroInicial, int heuristica);
     static SolverStats resolverAStar(const std::vector<char>& tabuleiroInicial, int heuristica); // alterado
     static SolverStats resolverIDAStar(const std::vector<char>& tabuleiroInicial, int heuristica); // alterado
@@ -61,9 +64,11 @@ private:
     static bool dfsLimitadoRecursivo(const std::vector<char>& tabuleiro, std::vector<int>& caminho, 
                                    std::unordered_set<std::string>& visitados, int limite, int profundidade,
                                    int& nos_expandidos, int& nos_visitados);
-    static bool idaStarRecursivo(const std::vector<char>& tabuleiro, std::vector<int>& caminho,
-                               std::unordered_set<std::string>& visitados, int limite, int profundidade,
-                               int& nos_expandidos, int& nos_visitados, int custo_g);
+
+    static int calcularCusto(const std::vector<char>& tabuleiro);
+    static int heuristica(const std::vector<char>& tabuleiro, int tipo);
+    static int calcularNumFichas(const std::vector<char>& tabuleiro);
+    static std::vector<char> gerarEstadoFinal(const std::vector<char>& tabuleiro);
 
 public:
     static SolverStats resolver(const std::vector<char>& tabuleiroInicial, int algoritmo = 1, int heuristica = 1);

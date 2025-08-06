@@ -11,7 +11,8 @@
 
 using namespace std;
 
-void mostrarMenu() {
+void mostrarMenu()
+{
     cout << "\n=== JOGO DAS FICHAS (REGUA PUZZLE) ===\n";
     cout << "1. Jogar\n";
     cout << "2. Ver regras\n";
@@ -21,7 +22,8 @@ void mostrarMenu() {
     cout << "Escolha uma opcao: ";
 }
 
-void mostrarRegras() {
+void mostrarRegras()
+{
     cout << "\n=== REGRAS DO JOGO ===\n";
     cout << "O jogo das fichas consiste em uma regua com espacos vazios e fichas de duas cores.\n";
     cout << "O objetivo e mover as fichas para que fiquem organizadas por cor.\n";
@@ -37,23 +39,29 @@ void mostrarRegras() {
     cout << "\nObjetivo: BBB..._AAA...\n";
 }
 
-int pedirNumFichas() {
+int pedirNumFichas()
+{
     int n;
     cout << "\nDigite o numero de fichas de cada cor (minimo 2): ";
-    while (true) {
+    while (true)
+    {
         cin >> n;
-        if (cin.fail() || n < 2) {
+        if (cin.fail() || n < 2)
+        {
             cout << "Valor invalido. Digite um numero maior ou igual a 2: ";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        } else {
+        }
+        else
+        {
             break;
         }
     }
     return n;
 }
 
-void mostrarMenuAlgoritmos() {
+void mostrarMenuAlgoritmos()
+{
     cout << "\nEscolha o algoritmo de busca:\n";
     cout << "1. Busca em Largura\n";
     cout << "2. Backtracking\n";
@@ -65,23 +73,34 @@ void mostrarMenuAlgoritmos() {
     cout << "Digite a opcao: ";
 }
 
-void mostrarMenuHeuristicas() {
+void mostrarMenuHeuristicas()
+{
     cout << "\nEscolha a heuristica:\n";
     cout << "1. Manhattan\n";
     cout << "2. Fichas Fora do Lugar\n";
     cout << "Digite a opcao: ";
 }
 
-string obterNomeAlgoritmo(int algoritmo) {
-    switch (algoritmo) {
-        case 1: return "Busca em Largura";
-        case 2: return "Backtracking";
-        case 3: return "Busca em Profundidade (Limitada)";
-        case 4: return "Busca Ordenada";
-        case 5: return "Busca Gulosa";
-        case 6: return "Busca A*";
-        case 7: return "Busca IDA*";
-        default: return "Desconhecido";
+string obterNomeAlgoritmo(int algoritmo)
+{
+    switch (algoritmo)
+    {
+    case 1:
+        return "Busca em Largura";
+    case 2:
+        return "Backtracking";
+    case 3:
+        return "Busca em Profundidade (Limitada)";
+    case 4:
+        return "Busca Ordenada";
+    case 5:
+        return "Busca Gulosa";
+    case 6:
+        return "Busca A*";
+    case 7:
+        return "Busca IDA*";
+    default:
+        return "Desconhecido";
     }
 }
 
@@ -124,61 +143,146 @@ bool desejaTabuleiroAleatorio() {
     return (resp == 's' || resp == 'S');
 }
 
-int pedirHeuristica() {
+int pedirHeuristica()
+{
     int h;
     mostrarMenuHeuristicas();
-    while (true) {
+    while (true)
+    {
         cin >> h;
-        if (cin.fail() || h < 1 || h > 2) {
+        if (cin.fail() || h < 1 || h > 2)
+        {
             cout << "Opcao invalida. Digite 1 ou 2: ";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        } else {
+        }
+        else
+        {
             break;
         }
     }
     return h;
 }
 
-int main() {
+
+vector<char> gerarTabuleiroPadrao(int num_fichas)
+{
+    vector<char> tabuleiro;
+    int tamanho = 2 * num_fichas + 1;
+
+    char atual = 'A';
+
+    for (int i = 0; i < tamanho; ++i)
+    {
+        if (i == num_fichas)
+        {
+            tabuleiro.push_back('_');
+        }
+        else
+        {
+            tabuleiro.push_back(atual);
+            atual = (atual == 'A') ? 'B' : 'A'; // alterna entre A e B
+        }
+    }
+
+    return tabuleiro;
+}
+
+
+
+int escolherTipoTabuleiro()
+{
+    int tipo;
+    cout << "\nEscolha o tipo de tabuleiro:\n";
+    cout << "1. Aleatorio\n";
+    cout << "2. Padrao intercalado (ex: A B A _ B A B)\n";
+    cout << "Digite a opcao: ";
+    while (true)
+    {
+        cin >> tipo;
+        if (cin.fail() || tipo < 1 || tipo > 2)
+        {
+            cout << "Opcao invalida. Digite 1 ou 2: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        else
+        {
+            break;
+        }
+    }
+    return tipo;
+}
+
+int main()
+{
     srand(time(0));
     int num_fichas = 3;
     ReguaPuzzle jogo(num_fichas);
     int opcao;
-    
-    do {
+
+    do
+    {
         mostrarMenu();
         cin >> opcao;
-        
-        switch(opcao) {
-            case 1:
-                num_fichas = pedirNumFichas();
-                jogo.setNumFichas(num_fichas);
-                jogo.iniciarJogo();
-                break;
-            case 2:
-                mostrarRegras();
-                break;
-            case 3: {
-                cout << "\n=== SOLUCIONADOR AUTOMATICO ===\n";
-                num_fichas = pedirNumFichas();
-                ReguaPuzzle jogo(num_fichas);
-                // Gera tabuleiro aleatório usando a lógica do jogo
-                vector<char> tabuleiro = jogo.getTabuleiro();
-                cout << "Tabuleiro inicial:\n";
-                cout << "+";
-                for (int i = 0; i < (int)tabuleiro.size(); ++i) cout << "-+";
-                cout << "\n|";
-                for (char c : tabuleiro) cout << c << "|";
-                cout << "\n+";
-                for (int i = 0; i < (int)tabuleiro.size(); ++i) cout << "-+";
-                cout << "\n ";
-                for (int i = 0; i < (int)tabuleiro.size(); ++i) cout << i << " ";
-                cout << "\n\n";
-                
-                mostrarMenuAlgoritmos();
-                int alg;
-                cin >> alg;
+
+        switch (opcao)
+        {
+        case 1:
+        {
+            num_fichas = pedirNumFichas();
+            int tipoTabuleiro = escolherTipoTabuleiro();
+            vector<char> tabuleiro;
+            if (tipoTabuleiro == 1)
+            {
+                ReguaPuzzle jogoTemp(num_fichas);
+                tabuleiro = jogoTemp.getTabuleiro();
+            }
+            else
+            {
+                tabuleiro = gerarTabuleiroPadrao(num_fichas);
+            }
+            ReguaPuzzle jogo(num_fichas);
+            jogo.setTabuleiro(tabuleiro); // <-- Adicione esta linha!
+            jogo.iniciarJogo();
+            break;
+        }
+        case 2:
+            mostrarRegras();
+            break;
+        case 3:
+        {
+            cout << "\n=== SOLUCIONADOR AUTOMATICO ===\n";
+            num_fichas = pedirNumFichas();
+            int tipoTabuleiro = escolherTipoTabuleiro();
+            vector<char> tabuleiro;
+            if (tipoTabuleiro == 1)
+            {
+                ReguaPuzzle jogoTemp(num_fichas);
+                tabuleiro = jogoTemp.getTabuleiro();
+            }
+            else
+            {
+                tabuleiro = gerarTabuleiroPadrao(num_fichas);
+            }
+            cout << "Tabuleiro inicial:\n";
+            cout << "+";
+            for (int i = 0; i < (int)tabuleiro.size(); ++i)
+                cout << "-+";
+            cout << "\n|";
+            for (char c : tabuleiro)
+                cout << c << "|";
+            cout << "\n+";
+            for (int i = 0; i < (int)tabuleiro.size(); ++i)
+                cout << "-+";
+            cout << "\n ";
+            for (int i = 0; i < (int)tabuleiro.size(); ++i)
+                cout << i << " ";
+            cout << "\n\n";
+
+            mostrarMenuAlgoritmos();
+            int alg;
+            cin >> alg;
 
                 int heuristica = 1;
                 if (alg == 5 || alg == 6 || alg == 7) {
@@ -226,7 +330,7 @@ int main() {
             default:
                 cout << "Opcao invalida!\n";
         }
-    } while(opcao != 4);
-    
+    } while (opcao != 4);
+
     return 0;
 }

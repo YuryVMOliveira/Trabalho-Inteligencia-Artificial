@@ -157,7 +157,6 @@ void ReguaPuzzle::moverFicha(int posicao) {
 
 bool ReguaPuzzle::verificarVitoria() const {
     bool encontrouVermelha = false;
-
     for (int i = 0; i < tamanho; ++i) {
         if (tabuleiro[i] == FICHA_VERMELHA) {
             encontrouVermelha = true;
@@ -167,7 +166,6 @@ bool ReguaPuzzle::verificarVitoria() const {
             return false;
         }
     }
-
     return true; // Nenhuma azul depois de vermelha → vitória!
 }
 
@@ -230,7 +228,6 @@ void ReguaPuzzle::limparTela() const {
 
 void ReguaPuzzle::iniciarJogo() {
     reiniciarJogo();
-    // Não embaralha mais
     while (!jogoTerminado) {
         limparTela();
         exibirTabuleiro();
@@ -263,6 +260,7 @@ void ReguaPuzzle::iniciarJogo() {
             std::cin.get();
         }
     }
+    tabuleiroDefinidoManualmente = false; // Permite novo jogo normal depois
     if (jogoTerminado) {
         std::cout << "\nPressione Enter para voltar ao menu...\n";
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -273,7 +271,10 @@ void ReguaPuzzle::iniciarJogo() {
 void ReguaPuzzle::reiniciarJogo() {
     movimentos = 0;
     jogoTerminado = false;
-    inicializarTabuleiro();
+    if (!tabuleiroDefinidoManualmente) {
+        inicializarTabuleiro();
+    }
+    // Se foi definido manualmente, só zera movimentos e status
 }
 
 int ReguaPuzzle::getMovimentos() const {
@@ -282,4 +283,18 @@ int ReguaPuzzle::getMovimentos() const {
 
 bool ReguaPuzzle::getJogoTerminado() const {
     return jogoTerminado;
-} 
+}
+
+void ReguaPuzzle::setTabuleiro(const std::vector<char>& novoTabuleiro) {
+    tabuleiro = novoTabuleiro;
+    tamanho = tabuleiro.size();
+    movimentos = 0;
+    jogoTerminado = false;
+    tabuleiroDefinidoManualmente = true; // <-- Adicione esta linha
+    for (int i = 0; i < tamanho; ++i) {
+        if (tabuleiro[i] == '_') {
+            posicaoVazia = i;
+            break;
+        }
+    }
+}
