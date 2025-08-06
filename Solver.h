@@ -47,7 +47,7 @@ private:
     
     // Heuristicas
     static int heuristicaManhattan(const std::vector<char>& tabuleiro);
-    static int heuristicaInversoes(const std::vector<char>& tabuleiro);
+    static int heuristicaFichasForaDoLugar(const std::vector<char>& tabuleiro);
 
 
     
@@ -57,8 +57,8 @@ private:
     static SolverStats resolverDFS(const std::vector<char>& tabuleiroInicial, double timeout = 10.0);
     static SolverStats resolverOrdenada(const std::vector<char>& tabuleiroInicial);
     static SolverStats resolverGulosa(const std::vector<char>& tabuleiroInicial, int heuristica);
-    static SolverStats resolverAStar(const std::vector<char>& tabuleiroInicial, int heuristica); // alterado
-    static SolverStats resolverIDAStar(const std::vector<char>& tabuleiroInicial, int heuristica); // alterado
+    static SolverStats resolverAStar(const std::vector<char>& tabuleiroInicial, int heuristica); 
+    static SolverStats resolverIDAStar(const std::vector<char>& tabuleiroInicial, int heuristica); 
     
     // Funcoes auxiliares
     static bool dfsLimitadoRecursivo(const std::vector<char>& tabuleiro, std::vector<int>& caminho, 

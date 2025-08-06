@@ -351,7 +351,7 @@ SolverStats Solver::resolverGulosa(const std::vector<char>& tabuleiroInicial, in
     int nos_visitados = 0;
     int soma_ramificacao = 0;
     int total_nos = 0;
-    int h_inicial = (heuristica == 2) ? heuristicaInversoes(tabuleiroInicial) : heuristicaManhattan(tabuleiroInicial);
+    int h_inicial = (heuristica == 2) ? heuristicaFichasForaDoLugar(tabuleiroInicial) : heuristicaManhattan(tabuleiroInicial);
     fila.push(Estado(tabuleiroInicial, {}, 0, 0, h_inicial));
     visitados.insert(tabuleiroParaString(tabuleiroInicial));
     
@@ -381,7 +381,7 @@ SolverStats Solver::resolverGulosa(const std::vector<char>& tabuleiroInicial, in
                 nos_visitados++;
                 std::vector<int> novosMovimentos = atual.movimentos;
                 novosMovimentos.push_back(movimento);
-                int h = (heuristica == 2) ? heuristicaInversoes(novoTabuleiro) : heuristicaManhattan(novoTabuleiro);
+                int h = (heuristica == 2) ? heuristicaFichasForaDoLugar(novoTabuleiro) : heuristicaManhattan(novoTabuleiro);
                 fila.push(Estado(novoTabuleiro, novosMovimentos, atual.profundidade + 1, 0, h));
             }
         }
@@ -416,7 +416,7 @@ SolverStats Solver::resolverAStar(const std::vector<char>& tabuleiroInicial, int
     
     // Gerar estado final para usar na heurística
     std::vector<char> estadoFinal = gerarEstadoFinal(tabuleiroInicial);
-    int h_inicial = (heuristica == 2) ? heuristicaInversoes(tabuleiroInicial) : heuristicaManhattan(tabuleiroInicial);
+    int h_inicial = (heuristica == 2) ? heuristicaFichasForaDoLugar(tabuleiroInicial) : heuristicaManhattan(tabuleiroInicial);
     fila.push(Estado(tabuleiroInicial, {}, 0, 0, h_inicial));
     visitados.insert(tabuleiroParaString(tabuleiroInicial));
 
@@ -448,7 +448,7 @@ SolverStats Solver::resolverAStar(const std::vector<char>& tabuleiroInicial, int
                 nos_visitados++;
                 std::vector<int> novosMovimentos = atual.movimentos;
                 novosMovimentos.push_back(movimento);
-                int h = (heuristica == 2) ? heuristicaInversoes(novoTabuleiro) : heuristicaManhattan(novoTabuleiro);
+                int h = (heuristica == 2) ? heuristicaFichasForaDoLugar(novoTabuleiro) : heuristicaManhattan(novoTabuleiro);
                 fila.push(Estado(novoTabuleiro, novosMovimentos, atual.profundidade + 1,
                                  atual.custo_g + 1, h));
             }
@@ -477,7 +477,7 @@ int Solver::calcularCusto(const std::vector<char>& tabuleiro) {
 
 int Solver::heuristica(const std::vector<char>& tabuleiro, int tipo) {
     if (tipo == 2) {
-        return heuristicaInversoes(tabuleiro);
+        return heuristicaFichasForaDoLugar(tabuleiro);
     } else {
         return heuristicaManhattan(tabuleiro);
     }
@@ -515,6 +515,8 @@ std::vector<char> Solver::gerarEstadoFinal(const std::vector<char>& tabuleiro) {
     return estadoFinal;
 }
 
+
+
 SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, int heuristica) {
     SolverStats stats;
     auto start = std::chrono::high_resolution_clock::now();
@@ -540,7 +542,7 @@ SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, i
             }
 
             nos_expandidos++;
-            
+
             if (verificarVitoria(tabuleiro)) {
                 stats.caminho = caminho;
                 stats.profundidade = profundidade;
@@ -548,53 +550,29 @@ SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, i
                 encontrou = true;
                 return true;
             }
-            
-            // Calcular heurística baseada no parâmetro
-            int h;
-            if (heuristica == 2) {
-                h = heuristicaInversoes(tabuleiro);
-            } else {
-                h = heuristicaManhattan(tabuleiro);
-            }
-            
+
+            int h = (heuristica == 2) ? heuristicaFichasForaDoLugar(tabuleiro) : heuristicaManhattan(tabuleiro);
             int f = custo_g + h;
-            if (f > limite) {
-                // Atualizar o próximo limite com o menor valor de f que excedeu
-                if (f < proximo_limite) {
-                    proximo_limite = f;
-                }
-                return false;
-            }
-            
+            if (f > limite) return false;
+
             std::string tabStr = tabuleiroParaString(tabuleiro);
             visitados.insert(tabStr);
             std::vector<int> movimentosPossiveis = encontrarMovimentosPossiveis(tabuleiro);
-            
-            // Ordenar movimentos por heurística (mais promissores primeiro)
-            std::sort(movimentosPossiveis.begin(), movimentosPossiveis.end(), 
-                [&](int a, int b) {
-                    std::vector<char> tabA = aplicarMovimento(tabuleiro, a);
-                    std::vector<char> tabB = aplicarMovimento(tabuleiro, b);
-                    int hA = (heuristica == 2) ? heuristicaInversoes(tabA) : heuristicaManhattan(tabA);
-                    int hB = (heuristica == 2) ? heuristicaInversoes(tabB) : heuristicaManhattan(tabB);
-                    return hA < hB; // Menor heurística primeiro
-                });
-            
             soma_ramificacao += movimentosPossiveis.size();
             total_nos++;
-            
+
             for (int movimento : movimentosPossiveis) {
                 std::vector<char> novoTabuleiro = aplicarMovimento(tabuleiro, movimento);
                 std::string novoTabuleiroStr = tabuleiroParaString(novoTabuleiro);
-                
+
                 if (visitados.find(novoTabuleiroStr) == visitados.end()) {
                     nos_visitados++;
                     caminho.push_back(movimento);
-                    
-                    if (idaStar(novoTabuleiro, profundidade + 1, custo_g + 1, visitados, proximo_limite)) {
+
+                    if (idaStar(novoTabuleiro, profundidade + 1, custo_g + 1, visitados)) {
                         return true;
                     }
-                    
+
                     caminho.pop_back();
 
                     if (timeout_ocorreu) return false; // Interrompe busca se timeout ocorrer em chamadas recursivas
@@ -617,7 +595,7 @@ SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, i
 
         limite++;
     }
-    
+
     auto end = std::chrono::high_resolution_clock::now();
     if (!encontrou) {
         stats.caminho.clear();
@@ -632,21 +610,20 @@ SolverStats Solver::resolverIDAStar(const std::vector<char>& tabuleiroInicial, i
 
     return stats;
 }
-// --- Implementação da DFS ilimitada com timeout ---
+
 SolverStats Solver::resolverDFS(const std::vector<char>& tabuleiroInicial, double timeout) {
     SolverStats stats;
     auto start = std::chrono::high_resolution_clock::now();
-    
+
     std::stack<Estado> pilha;
     std::set<std::string> visitados;
-    int nos_expandidos = 0;
-    int nos_visitados = 0;
+    int nos_expandidos = 0;  // Nós que geraram filhos
+    int nos_visitados = 0;   // Nós que foram desempilhados e processados
     int soma_ramificacao = 0;
     int total_nos = 0;
-    bool encontrou = false;
 
     pilha.push(Estado(tabuleiroInicial, {}, 0));
-    
+
     while (!pilha.empty()) {
         if (estourouTimeout(start, timeout)) break;
 
@@ -654,33 +631,30 @@ SolverStats Solver::resolverDFS(const std::vector<char>& tabuleiroInicial, doubl
         pilha.pop();
         std::string tabStr = tabuleiroParaString(atual.tabuleiro);
 
-        // Verifica se já foi visitado
+        // Marcar como visitado ao processar o nó
         if (visitados.find(tabStr) != visitados.end()) continue;
         visitados.insert(tabStr);
-
-        nos_expandidos++;
+        nos_visitados++;
 
         if (verificarVitoria(atual.tabuleiro)) {
             stats.caminho = atual.movimentos;
             stats.profundidade = atual.profundidade;
-            stats.custo = (int)atual.movimentos.size();
-            encontrou = true;
+            stats.custo = static_cast<int>(atual.movimentos.size());
             break;
         }
 
         std::vector<int> movimentosPossiveis = encontrarMovimentosPossiveis(atual.tabuleiro);
         soma_ramificacao += movimentosPossiveis.size();
         total_nos++;
+        nos_expandidos++; // Agora sim: esse nó gerou filhos
 
-        // Importante: empilhar em ordem reversa para manter comportamento de DFS
         std::reverse(movimentosPossiveis.begin(), movimentosPossiveis.end());
 
         for (int movimento : movimentosPossiveis) {
             std::vector<char> novoTabuleiro = aplicarMovimento(atual.tabuleiro, movimento);
             std::string novoTabuleiroStr = tabuleiroParaString(novoTabuleiro);
-            
+
             if (visitados.find(novoTabuleiroStr) == visitados.end()) {
-                nos_visitados++;
                 std::vector<int> novosMovimentos = atual.movimentos;
                 novosMovimentos.push_back(movimento);
                 pilha.push(Estado(novoTabuleiro, novosMovimentos, atual.profundidade + 1));
@@ -690,18 +664,19 @@ SolverStats Solver::resolverDFS(const std::vector<char>& tabuleiroInicial, doubl
 
     auto end = std::chrono::high_resolution_clock::now();
 
-    if (!encontrou) {
-        stats.caminho.clear();
+    if (stats.caminho.empty()) {
         stats.profundidade = -1;
         stats.custo = -1;
     }
 
     stats.nos_expandidos = nos_expandidos;
     stats.nos_visitados = nos_visitados;
-    stats.fator_ramificacao = total_nos > 0 ? (double)soma_ramificacao / total_nos : 0.0;
+    stats.fator_ramificacao = total_nos > 0 ? static_cast<double>(soma_ramificacao) / total_nos : 0.0;
     stats.tempo_execucao = std::chrono::duration<double>(end - start).count();
+
     return stats;
 }
+
 
 // Funcao principal que escolhe o algoritmo
 SolverStats Solver::resolver(const std::vector<char>& tabuleiroInicial, int algoritmo, int heuristica) {
@@ -757,5 +732,4 @@ void Solver::mostrarSolucao(const std::vector<char>& tabuleiroInicial, const Sol
     std::cout << "Fator medio de ramificacao: " << stats.fator_ramificacao << "\n";
     std::cout << "Tempo de execucao: " << stats.tempo_execucao << " segundos\n\n";
 }
-
 
